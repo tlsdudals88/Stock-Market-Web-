@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>     
+        <title>Homework8</title>
+        
+        <!-- Bootstrap library -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+        <!-- <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css"> -->
+        <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+        
+        
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+        <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+        <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+        
+        <!-- jQuery and Autocomplete library -->
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+        <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+        
+        <!-- Highstock library -->
+        <script src="https://code.highcharts.com/stock/highstock.js"></script>
+        <script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
+        
+        <script src='http://connect.facebook.net/en_US/sdk.js'></script>
+
+        <style type="text/css">
+            
+            
+            #container_chart {
+                
+            }
+            
+            #searchForm {
+                font-weight: bold;
+            }
+            
+            #favorite_header {
+                margin-bottom: 0px; 
+                border-bottom: none;
+            }
+            #stock_details {
+                margin-bottom: 0px; 
+                border-bottom: none; 
+            }
+            #tab_header {
+                padding-bottom: 30px;
+                padding-top: 20px;
+                border-bottom: 1px solid #DDDDDD;
+            }
+                        
+            #favorite_table > tbody > tr:nth-child(odd) > td
+            {
+              background-color: white;
+            }
+            #favorite_table > tbody > tr:nth-child(even) > td
+            {
+              background-color: #f9f9f9;
+            }
+            #yahoo_img {
+                max-width: 100%;
+                height: auto;
+            }
+
+            html {
+                height:100%;
+                min-height:100%;
+            }
+            
+            body {
+                font-size: 12px;
+                background: url("background_img.png") no-repeat center center fixed;
+
+                min-height: 100%;
+                
+                -webkit-background-size: cover;
+                -moz-background-size: cover;
+                -o-background-size: cover;
+                background-size: cover;
+            }
+            
+            /*
+            body {
+                height: 100%;
+                background-size: cover;
+                background: url("background_img.png") no-repeat center center fixed;
+
+            }
+            */
+            
+            @media only screen and (max-width: 767px) {
+              body {
+                /* The file size of this background image is 93% smaller
+                   to improve page load speed on mobile internet connections */
+                background-image: url("background_img.png");
+              }
+            }
+            
+            
+            /* Medium devices (desktops, 992px and up) */
+            @media (min-width: 992px) {
+                #powered_by {
+                    text-align:right;
+                }
+            }
+
+            /* Medium devices (desktops, 991px and down) */
+            @media (max-width: 991px) {
+                #powered_by {
+                    padding: 0;
+                    text-align:left;
+                }
+                #valid {
+                    padding: 0;
+                }
+            }
+        </style>
+    </head>
+
+    <body>
+        <script>
+        window.fbAsyncInit = function() {
+            FB.init({
+                appId      : '489792714544581',
+                xfbml      : true,
+                version    : 'v2.5'
+            });
+        };
+
+        (function(d, s, id){
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {return;}
+            js = d.createElement(s); js.id = id;
+            js.src = "//connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+
+        </script>
+        
+
+        <script language="javascript">
+            
+            function create_table(create_data) {
+                
+                var add_change = create_data.Change;
+                var add_change_percent = create_data.ChangePercent;
+                     
+                if(add_change[0] == '-' || add_change_percent[2] == '-') {
+                    $('#favorite_table > tbody:last').append("<tr id=tr_"+create_data.Symbol+" class='save'>"
+                                            + "<td><a href='#' onClick='parse_three_ajax(this)'>"+create_data.Symbol+"</a></td>"
+                                            + "<td>"+create_data.Name+"</td>"
+                                            + "<td>"+create_data.LastPrice+"</td>"
+                                            + "<td><font color='red'>"+create_data.Change+' '+create_data.ChangePercent+"</font>"
+                                            + " <img src='down.png' width=20px height=20px></td>"
+                                            + "<td>"+create_data.MarketCap+"</td>"
+                                            + "<td><span><button type='button' id=btn_"+create_data.Symbol+" class='btn btn-default' onClick=\'trash(this);\'>"  
+                                            + "<span class='glyphicon glyphicon-trash'></span></button></span></td></tr>");
+                }
+                else {
+                    $('#favorite_table > tbody:last').append("<tr id=tr_"+create_data.Symbol+" class='save'>"
+                                            + "<td><a href='#' onClick='parse_three_ajax(this)'>"+create_data.Symbol+"</a></td>"
+                                            + "<td>"+create_data.Name+"</td>"
+                                            + "<td>"+create_data.LastPrice+"</td>"
+                                            + "<td><font color='green'>"+create_data.Change+' '+create_data.ChangePercent+"</font>"
+                                            + " <img src='up.png' width=20px height=20px></td>"
+                                            + "<td>"+create_data.MarketCap+"</td>"
+                                            + "<td><span><button type='button' id=btn_"+create_data.Symbol+" class='btn btn-default' onClick=\'trash(this);\'>"  
+                                            + "<span class='glyphicon glyphicon-trash'></span></button></span></td></tr>");
+                }                
+                
+                
+                
+            }
+            
+            function create_table_ajax(param) {
+                         
+                    if(i == res.length)
+                        return 0;
+                    i++;
+
+                    // console.log(param);
+
+                    $.ajax({ // 1. Stock Quote
+                        // url: "http://localhost/hw8/server.php/?", 
+                        url: "http://sonorous-treat-124311.appspot.com/?",
+                        data: {symbol:param},
+                        type: 'GET',
+                        // async: false,
+                        success: function(response, status, xhr) {
+                            var data = JSON.parse(response);
+                            console.log(data);
+                            
+                            if(!data || data.Message) {
+                                alert("not stock parsing");
+                                $('#valid').html("Select a valid entry");
+                                return 0;
+                            }
+                            
+                            if(data.Name=='undefined' || data.Symbol=='undefined') {
+                                alert("try again, server send undefined value");
+                                return 0;
+                            }                        
+                  
+                            create_table(data);
+                            create_table_ajax(res[i]);
+   
+                            $('#valid').html(""); // remove invalid text            
+                        },
+                        
+                        error: function(xhr, status, error) {
+                            alert("parsing error");
+                        }
+                    }); // finish stock quote 
+            
+
+            
+            }
+            
+            function parsing_symbol() {
+                
+                if(save_symbol != null) {
+                    str = save_symbol.slice(0,-1); // remove last string 
+                    // console.log(str);
+                    res = str.split(",");
+                    i = 0;
+                    
+                    if(res[0] == "")
+                        return 0;
+                    
+                    create_table_ajax(res[0]);
+                    
+                    /*
+                    for(var i=0; i<res.length; i++)
+                    {
+                        if(res[0] == "")
+                            break;
+                        console.log(i+": "+res[i]+"\n");
+                        create_table_ajax(res[i]);    
+                    }
+                    */
+                }
+            }
+            
+            function trash(btn)
+            {   
+                // console.log(btn);
+                var tr = $(btn).parent().parent().parent();
+                var table_symbol = $(btn).parent().parent().parent().children().eq(0).children().eq(0).text();
+                // console.log(tr);
+                // console.log($(btn).parent().parent().parent().children().eq(0).children().eq(0).text());
+                
+                tr.remove();
+                
+                save_symbol = save_symbol.replace(table_symbol+",","");
+                localStorage.setItem("save_symbol",save_symbol);
+                
+                
+                // save_table();
+                
+                $('#add_button').show();
+                $('#delete_button').hide();         
+            }
+            /*
+            function save_table()
+            {
+                var mytable ="";
+                $('.save').each(function() {      
+                    mytable = $(this).parent().html();
+                });
+                // console.log(mytable);
+                localStorage.setItem("mytable", mytable);
+            }
+            */
+            
+            function refresh_ajax(param) {
+
+                    // console.log(param);
+                    
+                    $.ajax({ // 1. Stock Quote
+                        // url: "http://localhost/hw8/server.php/?", 
+                        url: "http://sonorous-treat-124311.appspot.com/?",
+                        data: {symbol:param},
+                        type: 'GET',
+                        success: function(response, status, xhr) {
+                            var data = JSON.parse(response);
+                            console.log(data);
+                            
+                            if(!data || data.Message) {
+                                alert("not stock parsing");
+                                $('#valid').html("Select a valid entry");
+                                return 0;
+                            }
+                            
+                            if(data.Name=='undefined' || data.Symbol=='undefined') {
+                                alert("try again, server send undefined value");
+                                return 0;
+                            }
+                            
+                            change_table(data);
+                            
+                            $('#valid').html(""); // remove invalid text
+                            
+                            
+                        },
+                        error: function(xhr, status, error) {
+                            alert("parsing error");
+                        }
+                    }); // finish stock quote    
+            }
+            
+            function change_table(refresh_data) {
+                
+                if(refresh_data.Change[0] == '-' || refresh_data.ChangePercent[2] == '-') {
+                    var refresh_change_changePercent = "<font color='red'>" + refresh_data.Change + " "
+                            + refresh_data.ChangePercent + "</font> <img src='down.png' width=20px height=20px>";
+                }
+                else {
+                    var refresh_change_changePercent = "<font color='green'>" + refresh_data.Change + " "
+                            + refresh_data.ChangePercent + "</font> <img src='up.png' width=20px height=20px>";
+                }
+                    
+                // for test
+                // Date d = new Date() using d
+                
+                // console.log(refresh_data.Symbol+" : "+refresh_data.LastPrice+" : "+refresh_change_changePercent)
+                // refresh the stock price
+                $('#tr_'+refresh_data.Symbol).children().eq(2).html(refresh_data.LastPrice);
+                // refresh the Change and ChangePercent
+                $('#tr_'+refresh_data.Symbol).children().eq(3).html(refresh_change_changePercent);
+                
+                
+                // save_table();
+            }
+
+
+            $(document).ready(function() {
+                
+             // localStorage.clear();    
+                
+                 $("#bb").on('click', function() {
+                     
+                   //  $('#container_chart').hide(); 
+                     
+                    setTimeout(function(){ 
+                         // $('#container_chart').show();
+                         $('#container_chart').highcharts().reflow();
+                        
+                    },300);
+                    
+                    // $('#container_chart').highcharts().reflow();
+                
+                    // $('#container_chart').highcharts().setSize($('#tab_wrapper').width()-22,400);
+
+                     /*
+                         console.log($('#tab_wrapper').width());
+
+                          $(window).resize(function() {
+                              $('#container_chart').highcharts().setSize($('#tab_wrapper').width()-22,400);
+                          });
+                     */
+
+                         // $('#container_chart').highcharts().setSize($('#tab_wrapper').width()-22,400);
+                     
+                 });
+
+                
+                // console.log(localStorage.getItem("save_symbol"));
+                
+                if(localStorage.getItem("save_symbol") == null)
+                {
+                   save_symbol = "";
+                }
+                else
+                {
+                    save_symbol = localStorage.getItem("save_symbol"); // fetch symbol from local storage
+                    parsing_symbol(); // parsing Local Storage Symbol
+                }
+                //console.log(save_symbol);
+                var mytimer = new Array(); // auto refresh timer
+                
+                
+
+                // $('#favorite_table > tbody:last').append(localStorage.getItem("mytable")); // fetch table  
+    
+                
+                $("#refresh_table").on('click', function() { // refresh favorite list
+                    $('.save').each(function() {
+                        var refresh_symbol = $(this).children().eq(0).children().eq(0).text();
+                        refresh_ajax(refresh_symbol);
+                    });   
+                }); // finish refresh
+                
+               
+                $(function() {
+                    $('#auto_refresh').change(function() { // auto refresh favorite list
+                         
+                        var number = 0;
+                        if($(this).prop('checked') == true) {
+                            
+                            $('.save').each(function() {
+                                number++;
+                                var refresh_symbol = $(this).children().eq(0).children().eq(0).text();
+                                 mytimer[number] = setInterval(function() {
+                                     number++;
+                                     refresh_ajax(refresh_symbol);
+                                }, 5000); 
+                                
+                            });
+                        }
+                        else {
+                            for(var i=1; i<99999; i++) {
+                                clearInterval(mytimer[i]); 
+                            }
+                            
+                        }
+                    })
+                }) // finish auto refresh
+  
+                
+                $("#FB").click(function() { // Facebook feed
+                      FB.ui({                     
+                          method: 'feed',
+                          picture: "http://chart.finance.yahoo.com/t?s=" +symbol+ "&lang=en-US&width=200&height=200",
+                          name: 'Current Stock Price of '+name+' is '+last_price,
+                          description:'Stock Information of '+name+' ('+symbol+')',
+                          caption: 'LAST TRAND PRICE: '+last_price+'. CHANGE:' 
+                          +change+' '+change_percent   
+                          // link: 'http://dev.markitondemand.com/'
+                      }, function(response){
+                          if (response && !response.error_message) {
+                            alert('Posted Successfully');
+                          } else {
+                            alert('Not Posted');
+                          }
+                      }); 
+                }); // finish facebook
+                
+                
+                $("#carousel-example-generic").carousel({ // carousel pause
+                    pause: true,
+                    interval: false
+                });  
+                $(".next-slide").attr("disabled",true); // next slide disabled
+                $(".prev-slide").click(function(){ // left arrow click
+                      $("#carousel-example-generic").carousel(0);
+                });
+                $(".next-slide").click(function(){ // right arrow click
+                      star_show_and_hide();
+                      $("#carousel-example-generic").carousel(1);
+                });
+                
+                
+
+                $('#add_button').on('click', function() { // Add to favorite list
+                      
+                    var add_change = change;
+                    var add_change_percent = change_percent;
+                     
+                    if(add_change[0] == '-' || add_change_percent[2] == '-') {
+                        $('#favorite_table > tbody:last').append("<tr id=tr_"+symbol+" class='save'>"
+                                                        + "<td><a href='#' onClick='parse_three_ajax(this)'>"+symbol+"</a></td>"
+                                                        + "<td>"+name+"</td>"
+                                                        + "<td>"+last_price+"</td>"
+                                                        + "<td><font color='red'>"+change+' '+change_percent+"</font>"
+                                                        + " <img src='down.png' width=20px height=20px></td>"
+                                                        + "<td>"+market_cap+"</td>"
+                                                        + "<td><span><button type='button' id=btn_"+symbol+" class='btn btn-default' onClick=\'trash(this);\'>"    
+                                                        + "<span class='glyphicon glyphicon-trash'></span></button></span></td></tr>");
+                    }
+                    else {
+                        $('#favorite_table > tbody:last').append("<tr id=tr_"+symbol+" class='save'>"
+                                                        + "<td><a href='#' onClick='parse_three_ajax(this)'>"+symbol+"</a></td>"
+                                                        + "<td>"+name+"</td>"
+                                                        + "<td>"+last_price+"</td>"
+                                                        + "<td><font color='green'>"+change+' '+change_percent+"</font>"
+                                                        + " <img src='up.png' width=20px height=20px></td>"
+                                                        + "<td>"+market_cap+"</td>"
+                                                        + "<td><span><button type='button' id=btn_"+symbol+" class='btn btn-default' onClick=\'trash(this);\'>"    
+                                                        + "<span class='glyphicon glyphicon-trash'></span></button></span></td></tr>");
+                    } 
+                    
+                    save_symbol += symbol+",";
+                    localStorage.setItem("save_symbol",save_symbol);
+                    
+                    // save_table();
+                     
+                    $(this).hide();
+                    $('#delete_button').show();
+                    
+                }); 
+                
+                $('#delete_button').on('click', function() { // delete favorite list
+                    
+                    var delete_tr = "tr_"+symbol;
+                    
+                    $('#'+delete_tr).remove();
+                                
+                    save_symbol = save_symbol.replace(symbol+",","");
+                    localStorage.setItem("save_symbol",save_symbol);
+                      
+                    // save_table();
+                    
+                    $(this).hide();
+                    $('#add_button').show();
+                });
+                
+       
+                $('#input_text').autocomplete({ // Autocomplete
+                    source: function(request, response) {
+                        $.ajax({
+                            // url: "http://localhost/hw8/server.php/?", 
+                            url: "http://sonorous-treat-124311.appspot.com/?",
+                            data: {input:request.term},
+                            type: 'GET',
+                            success: function(data) {
+                                var data = JSON.parse(data);
+                                // console.log(data);
+                                
+                                response($.map(data, function(item) {
+                                    return {
+                                        label: item.Symbol + " - " + item.Name + " ( " + item.Exchange + " )",
+                                        value: item.Symbol
+                                        // id: item.Name,
+                                        // abbrev: item.Exchange
+                                    };                                
+                                }));
+                                
+                            }
+                        });
+                    }
+                }); // finish autocomplete
+
+                $('#reset').on('click', function() { // Reset
+                    document.getElementById("input_text").value = ""; // input_text=""
+                    $("#carousel-example-generic").carousel(0); // back to the favorite table
+                    $(".next-slide").attr("disabled",true); // right arrow disabled
+                    $('#valid').html(""); // remove invalid sentence                 
+                    $("#auto_refresh").bootstrapToggle('off'); // checkbox off
+                    for(var i=1; i<99999; i++) { // stop auto refresh
+                        clearInterval(mytimer[i]); 
+                    } 
+                });
+                
+                $("#submit").on('click', function (e) { // Submit
+                    
+                    // empty_check();
+                    
+                    var input_text = document.getElementById("input_text");
+                    // console.log(input_text.checkValidity());
+                    
+                    if(input_text.checkValidity() == true) {
+                        e.preventDefault();
+                        parse_three_ajax(false);
+                    }
+                        
+                    
+                    
+                    
+                    
+                    
+                    
+                }); // finish submit
+                
+            }); // finish JQuery
+            
+            
+            
+            function parse_three_ajax(b) {
+                
+                if(b == false) {
+                    var param = $('#input_text').val(); // get param from form
+                }
+                else {
+                    var param = $(b).text(); // get param from favorite table
+                }
+
+                    // console.log(param);
+                    
+                    $.ajax({ // 1. Stock Quote
+                        // url: "http://localhost/hw8/server.php/?", 
+                        url: "http://sonorous-treat-124311.appspot.com/?",
+                        data: {symbol:param},
+                        type: 'GET',
+                        success: function(response, status, xhr) {
+                            var data = JSON.parse(response);
+                            console.log(data);
+                            
+                            if(!data || data.Message) {
+                                $('#valid').html("Select a valid entry");
+                                return 0;
+                            }
+                            
+                            if(data.Status == 'Failure|APP_SPECIFIC_ERROR') {
+                                $('#valid').html("Select a valid entry");
+                                return 0;
+                            }
+                            
+                            if(data.Timestamp == "31 December 1969, 04:00:00 pm PST") {
+                                alert("try again, server is not loading yet.")
+                                return 0;
+                            }
+ 
+                            parsing_stock(data);
+                            
+                            star_show_and_hide(); // favorite table check and star hide and show
+                            
+                            $('#valid').html(""); // remove invalid text
+                            $("#carousel-example-generic").carousel(1); // direct to next page
+                            $(".next-slide").removeAttr("disabled"); // remove favorite table disabled arrow
+                        },
+                        error: function(xhr, status, error) {
+                            alert("stock quote parsing error");
+                        }
+                    }); // finish stock quote
+                           
+                    $.ajax({ // 2. chart
+                        // url: "http://localhost/hw8/server.php/?",
+                        url: "http://sonorous-treat-124311.appspot.com/?", 
+                        data: {
+                            chart:param,      
+                        },
+                        type: 'GET',
+                        success: function(response, status, xhr) {
+                            // console.log(response);
+                            var data = JSON.parse(response);
+                            console.log(data);
+                            
+                            if(!data || data.Message) {
+                                return 0;
+                            }
+                            
+                            if(data.Positions == null || data.Dates == null) {
+                                alert("There is no chart data");
+                                return 0;
+                            }
+                            parsing_chart(data);
+                        },
+                        error: function(xhr, status, error) {
+                            alert("chart parsing error");
+                            return 0;
+                        }
+                    }); // finish chart
+                          
+                    
+                    $.ajax({ // 3. News
+                        // url: "http://localhost/hw8/server.php/?",
+                        url: "http://sonorous-treat-124311.appspot.com/?",
+                        data: {news:param},
+                        // jsonp: "callback",
+                        // jsonpCallback: 'jsonpCallback',
+                        // dataType: "jsonp",
+                        type: 'GET',
+                        success: function(response, status, xhr) {
+                            var data = JSON.parse(response);
+                            console.log(data);
+                            
+                            // parsing_google_news(data);
+                            parsing_bing_news(data);
+                        },
+                        error: function(xhr, status, error) {
+                            alert("news parsing error");
+                        }
+                    }); // finish news
+            
+                    
+            }
+            
+            function star_show_and_hide() { // favorite table check and star hide and show (1.link, 2.get quote, 3.next carousel)
+                                         
+                // favorite table check and star hide and show
+                $('#favorite_table tr').each(function() {
+
+                    var customerId = $(this).find("td:first a").html();
+                                
+                    // console.log(customerId);
+                                
+                    if(symbol == customerId)
+                    {
+                        $('#delete_button').show();
+                        $('#add_button').hide();
+                                    
+                        return false;
+                    }
+                    $('#delete_button').hide();
+                    $('#add_button').show();
+
+                });
+            }
+            
+                   
+            function parsing_stock(data) { // 1. parsing stock data
+                name = data.Name;
+                symbol = data.Symbol;
+                last_price = data.LastPrice;
+                change = data.Change;
+                change_percent = data.ChangePercent;
+                time_and_date = data.Timestamp;
+                market_cap = data.MarketCap;
+                volume = data.Volume;
+                change_YTD = data.ChangeYTD;
+                change_YTD_percent = data.ChangePercentYTD;
+                high_price = data.High;
+                low_price = data.Low;
+                opening_price = data.Open;
+                
+                
+                $('#name').html(name);
+                $('#symbol').html(symbol);
+                $('#last_price').html(last_price);
+                
+                if(change[0] == '-' || change_percent[2] == '-')
+                    $('#change').html("<font color='red'>" + change + " "
+                            + change_percent + "</font> <img src='down.png' width=20px height=20px>");
+                else
+                    $('#change').html("<font color='green'>" + change + " "
+                            + change_percent + "</font> <img src='up.png' width=20px height=20px>");
+                
+                $('#time_and_date').html(time_and_date);
+                $('#market_cap').html(market_cap);
+                $('#volume').html(volume);
+                
+                if(change_YTD[0] == '-' || change_YTD_percent[2] == '-')       
+                    $('#change_YTD').html("<font color='red'>" + change_YTD + " " 
+                            + change_YTD_percent + "</font> <img src='down.png' width=20px height=20px>");
+                else
+                    $('#change_YTD').html("<font color='green'>" + change_YTD + " "
+                            + change_YTD_percent + "</font> <img src='up.png' width=20px height=20px>");
+                
+                $('#high_price').html(high_price);
+                $('#low_price').html(low_price);
+                $('#opening_price').html(opening_price);
+                $('#yahoo').html("<img src='http://chart.finance.yahoo.com/t?s=" +data.Symbol+ "&lang=en-US&width=400&height=300' id='yahoo_img'>");
+            }
+            
+
+            function parsing_chart(data) { // 2. parsing chart
+                
+                var symbol1 = data.Elements[0].Symbol;
+                
+                function fixDate(dateIn) {
+                    var dat = new Date(dateIn);
+                    return Date.UTC(dat.getFullYear(), dat.getMonth(), dat.getDate());
+                };
+
+                function getOHLC(json) {
+                    var dates = json.Dates || [];
+                    var elements = json.Elements || [];
+                    var chartSeries = [];
+
+                    if (elements[0]){
+
+                        for (var i = 0, datLen = dates.length; i < datLen; i++) {
+                            var dat = fixDate( dates[i] );
+                            var pointData = [
+                                dat,
+                                elements[0].DataSeries['open'].values[i],
+                                elements[0].DataSeries['high'].values[i],
+                                elements[0].DataSeries['low'].values[i],
+                                elements[0].DataSeries['close'].values[i]
+                            ];
+                            chartSeries.push( pointData );
+                        };
+                    }
+                    return chartSeries;
+                };
+
+                function getVolume(json) {
+                    var dates = json.Dates || [];
+                    var elements = json.Elements || [];
+                    var chartSeries = [];
+
+                    if (elements[1]){
+
+                        for (var i = 0, datLen = dates.length; i < datLen; i++) {
+                            var dat = fixDate( dates[i] );
+                            var pointData = [
+                                dat,
+                                elements[1].DataSeries['volume'].values[i]
+                            ];
+                            chartSeries.push( pointData );
+                        };
+                    }
+                    return chartSeries;
+                };
+                        
+                var ohlc = getOHLC(data);      
+                var volume = getVolume(data);
+
+                // set the allowed units for data grouping
+                var groupingUnits = [[
+                    'week',                         // unit name
+                    [1]                             // allowed multiples
+                ], [
+                    'month',
+                    [1, 2, 3, 4, 6]
+                ]];
+
+                // create the chart
+                $('#container_chart').highcharts('StockChart', {
+                    
+                    
+                    
+                    exporting: {
+                            enabled: false
+                    },  
+                    rangeSelector: {
+                         buttons: [{
+                            type: 'week',
+                            count: 1,
+                            text: '1w'
+                        }, {
+                            type: 'month',
+                            count: 1,
+                            text: '1m'
+                        }, {
+                            type: 'month',
+                            count: 3,
+                            text: '3m'
+                        }, {
+                            type: 'month',
+                            count: 6,
+                            text: '6m'
+                        }, {
+                            type: 'ytd',
+                            text: 'YTD'
+                        }, {
+                            type: 'year',
+                            count: 1,
+                            text: '1y'
+                        }, {
+                            type: 'all',
+                            text: 'All'
+                        }],
+                        selected: 0
+                        
+                        ,inputEnabled: false
+                    },
+                    
+                    title: {
+                        text: symbol1 + ' Stock Value'
+                    },
+
+                    yAxis: [{
+                        title: {
+                            // text: 'OHLC'
+                            text: 'Stock Value'
+                        },
+                        height: 200,
+                        lineWidth: 2
+                    }, {
+                        title: {
+                            // text: 'Volume'
+                        },
+                        top: 300,
+                        height: 100,
+                        offset: 0,
+                        lineWidth: 2
+                    }],
+                    
+                    tooltip: {
+                        valueDecimals: 2,
+                        valuePrefix: '$'
+                    },
+                    
+                    
+                    series: [{
+                        // type: 'candlestick',
+                        type: 'area',
+                        name: symbol1,
+                        data: ohlc,
+                        dataGrouping: {
+                            units: groupingUnits
+                        },
+                        fillColor : {
+                            linearGradient : {
+                                x1: 0,
+                                y1: 0,
+                                x2: 0,
+                                y2: 1
+                            },
+                            stops : [
+                                [0, Highcharts.getOptions().colors[0]],
+                                [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+                            ]
+                        }     
+                    }],                                   
+
+                    credits: {
+                        enabled:false
+                    }                
+                });
+                
+            }
+            
+            function parsing_google_news(data) { // 3. parsing google news data
+                var content = "";
+                for(var i=0; i<data.responseData.results.length; i++) {
+                    content += "<div id='wrap' style='background-color:#F3F3F3;'>";
+                    content += "<div class='title'>" + data.responseData.results[i].title + "</div><br>";
+                    content += "<div class='content'>" + data.responseData.results[i].content + "</div><br>";
+                    content += "<div class='publisher'>" + data.responseData.results[i].publisher + "</div><br>";
+                    content += "<div class='publishedDate'>" + data.responseData.results[i].publishedDate + "</div>";
+                    content += "</div>";
+                    content += "<br><br>";      
+                }      
+                $('#news_data').html(content);
+            }
+            function parsing_bing_news(data) { // 3. parsing bing news data
+                var content = "";
+                var input_text1 = document.getElementById("input_text").value;
+                // console.log(input_text1.toUpperCase());
+                
+                
+                for(var i=0; i<data.d.results.length; i++) {
+                    
+                    var bold_description = 
+                        data.d.results[i].Description.replace(input_text1.toUpperCase(),"<b>"+input_text1.toUpperCase()+"</b>");
+                    
+                    content += "<div class='well well-sm' style='margin:0;'>";
+                    content += "<a href='"+ data.d.results[i].Url +"'"+"target='_blank'><div class='title'>" + data.d.results[i].Title + "</div></a><br>";
+                    content += "<div class='content'>" + bold_description + "</div><br>";
+                    content += "<div class='publisher' style='font-weight:bold;'>Publisher: " + data.d.results[i].Source + "</div><br>";
+                    content += "<div class='publishedDate' style='font-weight:bold;'>Date: " + data.d.results[i].Date + "</div>";
+                    content += "</div>";
+                    content += "<br><br>";
+                    
+                    
+                }
+                
+                
+                
+                $('#news_data').html(content);
+            }
+            
+            
+            // col-md : full of webpage screen
+            // col-sm : half of webpage screen
+            // col-xs : mobile screen
+            
+            
+            
+        function empty_check() // empty search box
+        {
+            var input_text = document.getElementById("input_text").value;
+            console.log(input_text);
+            if(input_text == null || input_text == "")
+            {
+                // document.getElementById("input_text").setCustomValidity('Please enter Name or Symbol!!!');
+
+                alert("Please enter Name or Symbol");
+                return false;
+            }   
+        }    
+            
+            
+            
+        </script>  
+
+        
+<div class="container-fluid"> <!-- using bootstrap col -->
+    <div class="col-md-offset-1 col-md-10 col-sm-12 col-xs-12" style="margin-top:10px; padding:0"> <!-- All contents --> 
+        <div id="carousel-example-generic" class="carousel slide" data-ride="carousel"> <!-- using bootstrap carousel -->
+            
+            
+<!-- Form -->
+<div id="form" class="well well-sm col-md-12 col-sm-12 col-xs-12" style="background-color:rgb(255,255,255); margin-bottom:0; border-radius:10px;"> 
+    <form id="searchForm" role="form">
+        <div class="col-md-12 col-sm-12 col-xs-12" id="stock_search" style="text-align:center; font-size:18px; margin-bottom:15px;">
+            Stock Market Search
+        </div>
+        <div class="col-md-3 col-sm-12 col-xs-12" style="margin-bottom:15px;">
+            Enter the stock name or symbol: <span style="color:red;">*</span>
+        </div>                
+
+        <div class="col-md-6 col-sm-12 col-xs-12 form-group" style="margin-bottom:15px;">
+
+                      
+            <input type="text" id="input_text" name="symbol" class="form-control"  
+                    required oninvalid="this.setCustomValidity('Please fill out this field.')"
+    oninput="setCustomValidity('')" value="" placeholder="Apple Inc or AAPL">
+ 
+            
+            
+        </div>
+
+        <div class="col-md-3 col-sm-12 col-xs-12 form-group" style="margin-bottom:15px;">
+            <span>
+                <button type="submit" class="btn btn-primary submit" id="submit" value="Get Quote">
+                    <span class="glyphicon glyphicon-search"></span> Get Quote
+                </button> 
+            </span>
+
+            <span>
+                <button type="button" class="btn btn-default" id="reset" value="Clear">
+                    <span class="glyphicon glyphicon-refresh"></span> Clear 
+                </button>
+            </span>
+        </div> 
+
+        <div class="col-md-12 col-sm-12 col-xs-12" style="margin-bottom:15px;">
+            <div class="col-md-offset-3 col-md-5 col-sm-12 col-xs-12" id="valid" style="color:red;"></div>
+
+            <div class="col-md-4 col-sm-12 col-xs-12" id="powered_by">Powered By:
+                <a href="http://www.markit.com/product/markit-on-demand" target="_blank">
+                    <img src="mod-logo.png" width=200px>
+                </a>
+            </div>
+        </div>
+      <br><br>     
+    </form>   
+</div>
+<!-- Form -->
+
+<!-- Underline -->
+<div class="col-md-12 col-sm-12 col-xs-12" style="padding:0; margin:0;"><hr></hr></div>
+<!-- Underline -->
+
+<!-- Wrapper for slides -->
+<div class="carousel-inner" role="listbox">
+    <div class="item active"> <!-- item1 -->
+        
+        <div class="col-md-12 col-sm-12 col-xs-12 well" id="favorite" style="background-color: rgb(255,255,255); border-radius:10px;">
+            <div class="col-md-12 col-sm-12 col-xs-12" style="padding:0;">            
+                <div id="favorite_header" class="col-md-12 col-sm-12 col-xs-12 well well-sm">
+
+                    <div class="col-md-6 col-sm-5 col-xs-5" style="font-weight:bold;">
+                        Favorite List
+                    </div>
+                    
+                    <div class="col-md-6 col-sm-7 col-xs-7" style="padding:0; text-align:right;">
+                        <span class="hidden-sm hidden-xs">Automatic Refresh:</span> <!-- hidden mobile device -->
+
+                        <input type="checkbox" data-toggle="toggle" id="auto_refresh">
+
+                        <button type="button" class="btn btn-default" id="refresh_table">
+                            <span class="glyphicon glyphicon-refresh"></span>
+                        </button>
+
+                        <button type="button" class="btn btn-default next-slide">
+                            <span class="glyphicon glyphicon-chevron-right"></span>
+                        </button>
+                    </div>
+                   
+                </div>
+
+                <div id="favorite_table_wrapper" class="table-responsive col-md-12 col-sm-12 col-xs-12 well well-sm" style="background-color: rgb(255,255,255);">
+                    <table class="table table-striped" id="favorite_table">
+                        <tr>
+                            <th>Symbol</th>
+                            <th>Company Name</th>
+                            <th>Stock Price</th>
+                            <th>Change (Change Percent)</th>
+                            <th>Market Cap</th>
+                            <th></th>
+                        </tr>
+                        <tbody></tbody>
+                    </table>
+                </div>                 
+            </div>
+        </div>   
+        
+    </div> <!-- finish item1 -->
+
+    <div class="item"> <!-- item2 -->
+
+        <div class="col-md-12 col-sm-12 col-xs-12 well" id="result" style="background-color: rgb(255,255,255); border-radius:10px;">
+            <div class="col-md-12 col-sm-12 col-xs-12" style="padding:0;">   
+                <div id="stock_details" class="col-md-12 col-sm-12 col-xs-12 well well-sm">
+                    <div class="col-md-1 col-sm-2 col-xs-2">
+                        <button type="button" class="btn btn-default prev-slide">
+                            <span class="glyphicon glyphicon-chevron-left"></span>
+                        </button>
+                    </div>
+
+                    <div class="col-md-11 col-sm-10 col-xs-10" style="text-align:center; font-weight:bold;">
+                        Stock Details
+                    </div>
+                </div>
+
+                <div id="tab_wrapper" class="col-md-12 col-sm-12 col-xs-12 well well-sm" style="background-color: rgb(255,255,255);"> 
+                    <ul id="tab_header" class="col-md-12 col-sm-12 col-xs-12 nav nav-pills" role="tablist">
+                        <li role="presentation" class="active" id="aa">
+                            <a data-toggle="pill" href="#stock">
+                                <span class="glyphicon glyphicon-dashboard"></span> 
+                                <span class="hidden-sm hidden-xs">Current Stock</span>
+                                <span class="hidden-md hidden-lg">Stock</span>
+                            </a>
+                        </li>
+                        <li role="presentation" id="bb">
+                            <a data-toggle="pill" href="#chart">
+                                <span class="glyphicon glyphicon-stats"></span> 
+                                <span class="hidden-sm hidden-xs">Historical Charts</span>
+                                <span class="hidden-md hidden-lg">Charts</span>
+                            </a>
+                        </li>
+                        <li role="presentation" id="cc">
+                            <a data-toggle="pill" href="#news">
+                                <span class="glyphicon glyphicon-link"></span>
+                                <span class="hidden-sm hidden-xs">News Feeds</span>
+                                <span class="hidden-md hidden-lg">News</span>
+                            </a>
+                        </li>
+                    </ul>
+
+                    <div class="col-md-12 col-sm-12 col-xs-12 tab-content" id="tab_content" style="padding:0;"> <!-- three tab content -->
+                        
+                        <div role="tabpanel" class="col-md-12 col-sm-12 col-xs-12 tab-pane fade in active" id="stock"> <!-- stock tab panel -->
+       
+                            <div class="col-md-12 col-sm-12 col-xs-12" style="margin-top:30px;">
+                                <div class="col-md-6 col-sm-12 col-xs-12" style="padding:0; font-weight:bold;">
+                                    Stock Details
+                                </div>
+
+                                <div class="col-md-6 col-sm-12 col-xs-12" style="text-align:right;">
+                                    <a href='#' id='FB' style="display:inline;">
+                                        <img class="img-responsive" src="FB_icon.png" 
+                                            style="height:40px; width:40px; display:inline;"/>
+                                    </a>
+                                    
+                                    <button type="button" class="btn btn-default" id="add_button">
+                                          <span class="glyphicon glyphicon-star-empty"></span>
+                                    </button> 
+
+                                    <button type="button" class="btn btn-default" id="delete_button" style="color:yellow;">
+                                          <span class="glyphicon glyphicon-star"></span>
+                                    </button> 
+                                </div>   
+                            </div>
+                            
+                            <div class="col-md-6 col-sm-12 col-xs-12" style="padding:0;"> <!-- table wrapper for dividing by 2 -->
+                                <table class="col-md-12 col-sm-12 col-xs-12 table table-striped">
+                                    <tr>
+                                        <td style="font-weight:bold;">Name</td>
+                                        <td id="name">N/A</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight:bold;">Symbol</td>
+                                        <td id="symbol">N/A</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight:bold;">Last Price</td>
+                                        <td id="last_price">N/A</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight:bold;">Change (Change Percent)</td>
+                                        <td id="change">N/A</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight:bold;">Time and Date</td>
+                                        <td id="time_and_date">N/A</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight:bold;">Market Cap</td>
+                                        <td id="market_cap">N/A</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight:bold;">Volume</td>
+                                        <td id="volume">N/A</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight:bold;">Change YTD (Change Percent YTD)</td>
+                                        <td id="change_YTD">N/A</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight:bold;">High Price</td>
+                                        <td id="high_price">N/A</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight:bold;">Low Price</td>
+                                        <td id="low_price">N/A</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight:bold;">Opening Price</td>
+                                        <td id="opening_price">N/A</td>
+                                    </tr>    
+                                </table>
+                            </div>
+
+                            <div id="yahoo" class="col-md-6 col-sm-12 col-xs-12"></div> 
+                        </div>
+
+                        <div role="tabpanel" class="tab-pane fade" id="chart"> <!-- stock chart panel -->
+                            <div id="container_chart" style="margin:30px;"></div>
+                        </div>
+
+                        <div role="tabpanel" class="tab-pane fade" id="news" style="margin:30px;"> <!-- stock news panel -->
+                            <div id ="news_data"></div>
+                        </div>
+                    </div>       
+                </div>         
+            </div>
+        </div>
+    </div> <!-- finish item2 -->
+   
+</div> <!-- carousel-inner -->                
+       
+    
+    
+      
+        </div> <!-- finish carousel --> 
+    </div> <!-- finish All contents -->       
+</div> <!-- finish bootstrap col (container-fluid) -->
+    
+    <noscript>   
+    </body>
+</html>
+
