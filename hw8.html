@@ -70,7 +70,7 @@
             
             body {
                 font-size: 12px;
-                background: url("background_img.png") no-repeat center center fixed;
+                background: url("image/background_img.png") no-repeat center center fixed;
 
                 min-height: 100%;
                 
@@ -93,7 +93,7 @@
               body {
                 /* The file size of this background image is 93% smaller
                    to improve page load speed on mobile internet connections */
-                background-image: url("background_img.png");
+                background-image: url("image/background_img.png");
               }
             }
             
@@ -152,7 +152,7 @@
                                             + "<td>"+create_data.Name+"</td>"
                                             + "<td>"+create_data.LastPrice+"</td>"
                                             + "<td><font color='red'>"+create_data.Change+' '+create_data.ChangePercent+"</font>"
-                                            + " <img src='down.png' width=20px height=20px></td>"
+                                            + " <img src='image/down.png' width=20px height=20px></td>"
                                             + "<td>"+create_data.MarketCap+"</td>"
                                             + "<td><span><button type='button' id=btn_"+create_data.Symbol+" class='btn btn-default' onClick=\'trash(this);\'>"  
                                             + "<span class='glyphicon glyphicon-trash'></span></button></span></td></tr>");
@@ -163,7 +163,7 @@
                                             + "<td>"+create_data.Name+"</td>"
                                             + "<td>"+create_data.LastPrice+"</td>"
                                             + "<td><font color='green'>"+create_data.Change+' '+create_data.ChangePercent+"</font>"
-                                            + " <img src='up.png' width=20px height=20px></td>"
+                                            + " <img src='image/up.png' width=20px height=20px></td>"
                                             + "<td>"+create_data.MarketCap+"</td>"
                                             + "<td><span><button type='button' id=btn_"+create_data.Symbol+" class='btn btn-default' onClick=\'trash(this);\'>"  
                                             + "<span class='glyphicon glyphicon-trash'></span></button></span></td></tr>");
@@ -313,11 +313,11 @@
                 
                 if(refresh_data.Change[0] == '-' || refresh_data.ChangePercent[2] == '-') {
                     var refresh_change_changePercent = "<font color='red'>" + refresh_data.Change + " "
-                            + refresh_data.ChangePercent + "</font> <img src='down.png' width=20px height=20px>";
+                            + refresh_data.ChangePercent + "</font> <img src='image/down.png' width=20px height=20px>";
                 }
                 else {
                     var refresh_change_changePercent = "<font color='green'>" + refresh_data.Change + " "
-                            + refresh_data.ChangePercent + "</font> <img src='up.png' width=20px height=20px>";
+                            + refresh_data.ChangePercent + "</font> <img src='image/up.png' width=20px height=20px>";
                 }
                     
                 // for test
@@ -463,7 +463,7 @@
                                                         + "<td>"+name+"</td>"
                                                         + "<td>"+last_price+"</td>"
                                                         + "<td><font color='red'>"+change+' '+change_percent+"</font>"
-                                                        + " <img src='down.png' width=20px height=20px></td>"
+                                                        + " <img src='image/down.png' width=20px height=20px></td>"
                                                         + "<td>"+market_cap+"</td>"
                                                         + "<td><span><button type='button' id=btn_"+symbol+" class='btn btn-default' onClick=\'trash(this);\'>"    
                                                         + "<span class='glyphicon glyphicon-trash'></span></button></span></td></tr>");
@@ -474,7 +474,7 @@
                                                         + "<td>"+name+"</td>"
                                                         + "<td>"+last_price+"</td>"
                                                         + "<td><font color='green'>"+change+' '+change_percent+"</font>"
-                                                        + " <img src='up.png' width=20px height=20px></td>"
+                                                        + " <img src='image/up.png' width=20px height=20px></td>"
                                                         + "<td>"+market_cap+"</td>"
                                                         + "<td><span><button type='button' id=btn_"+symbol+" class='btn btn-default' onClick=\'trash(this);\'>"    
                                                         + "<span class='glyphicon glyphicon-trash'></span></button></span></td></tr>");
@@ -711,10 +711,10 @@
                 
                 if(change[0] == '-' || change_percent[2] == '-')
                     $('#change').html("<font color='red'>" + change + " "
-                            + change_percent + "</font> <img src='down.png' width=20px height=20px>");
+                            + change_percent + "</font> <img src='image/down.png' width=20px height=20px>");
                 else
                     $('#change').html("<font color='green'>" + change + " "
-                            + change_percent + "</font> <img src='up.png' width=20px height=20px>");
+                            + change_percent + "</font> <img src='image/up.png' width=20px height=20px>");
                 
                 $('#time_and_date').html(time_and_date);
                 $('#market_cap').html(market_cap);
@@ -722,10 +722,10 @@
                 
                 if(change_YTD[0] == '-' || change_YTD_percent[2] == '-')       
                     $('#change_YTD').html("<font color='red'>" + change_YTD + " " 
-                            + change_YTD_percent + "</font> <img src='down.png' width=20px height=20px>");
+                            + change_YTD_percent + "</font> <img src='image/down.png' width=20px height=20px>");
                 else
                     $('#change_YTD').html("<font color='green'>" + change_YTD + " "
-                            + change_YTD_percent + "</font> <img src='up.png' width=20px height=20px>");
+                            + change_YTD_percent + "</font> <img src='image/up.png' width=20px height=20px>");
                 
                 $('#high_price').html(high_price);
                 $('#low_price').html(low_price);
@@ -1003,7 +1003,7 @@
 
             <div class="col-md-4 col-sm-12 col-xs-12" id="powered_by">Powered By:
                 <a href="http://www.markit.com/product/markit-on-demand" target="_blank">
-                    <img src="mod-logo.png" width=200px>
+                    <img src="image/mod-logo.png" width=200px>
                 </a>
             </div>
         </div>
@@ -1114,7 +1114,7 @@
 
                                 <div class="col-md-6 col-sm-12 col-xs-12" style="text-align:right;">
                                     <a href='#' id='FB' style="display:inline;">
-                                        <img class="img-responsive" src="FB_icon.png" 
+                                        <img class="img-responsive" src="image/FB_icon.png" 
                                             style="height:40px; width:40px; display:inline;"/>
                                     </a>
                                     
